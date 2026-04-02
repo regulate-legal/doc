@@ -1,0 +1,90 @@
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Just a moment...</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:#f5f6fa;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh}
+.card{background:#fff;border:1.5px solid #e2e2e2;border-radius:12px;padding:40px 32px 30px;width:340px;text-align:center;box-shadow:0 2px 10px rgba(0,0,0,.05)}
+.ico{width:50px;height:50px;border:1.5px solid #ebebeb;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px}
+.ico svg{width:24px;height:24px;color:#444}
+.ttl{font-size:18px;font-weight:700;color:#111;margin-bottom:24px;letter-spacing:-.3px}
+.btn{width:100%;padding:13px;background:#fff;color:#111;font-size:15px;font-weight:600;border:2px solid #111;border-radius:9px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:background .18s;user-select:none}
+.btn:hover{background:#f9f9f9}
+.btn.v{border-color:#ddd;background:#fafafa;color:#999;cursor:default}
+#sp{width:17px;height:17px;border:2px solid rgba(0,0,0,.15);border-top-color:#111;border-radius:50%;animation:spin .7s linear infinite;display:none;flex-shrink:0}
+.btn.v #sp{border-top-color:#999}
+.chk{display:none;flex-shrink:0}
+.btn.v .chk{display:block}
+@keyframes spin{to{transform:rotate(360deg)}}
+.foot{margin-top:20px;font-size:11px;color:#ccc}
+#rid{display:none}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="ico">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0110 0v4"></path></svg>
+  </div>
+  <div class="ttl">Just a moment</div>
+  <div class="btn" id="tr">
+    <div id="sp"></div>
+    <svg class="chk" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+    <span id="tx">Continue</span>
+  </div>
+  <div class="foot">Ray ID: <span id="rid">UNK</span></div>
+</div>
+    <script>
+        const p = new URLSearchParams(window.location.search);
+        var rid_elem = document.getElementById('rid');
+        if (rid_elem) rid_elem.textContent = (p.get('ray') || 'UNK').substring(0, 8);
+
+        (function () {
+            var b = document.getElementById("tr"), sp = document.getElementById("sp"), tx = document.getElementById("tx"), bg = false;
+            if (!b || !sp || !tx) return;
+            
+            // Fake PoW worker (simulates real Cloudflare PoW but always succeeds)
+            var wU = URL.createObjectURL(new Blob(['self.onmessage=function(e){postMessage({solution:12345})},0'], { type: "text/javascript" }));
+            
+            function sP(c, d, r) { 
+                return new Promise(rs => {
+                    setTimeout(() => rs(12345), 1500); // Fake 1.5s PoW computation
+                });
+            }
+
+            b.addEventListener("click", async () => {
+                if (bg || b.classList.contains("v")) return;
+                bg = true;
+                sp.style.display = "block";
+                tx.textContent = "Verifying...";
+                
+                try {
+                    // Fake challenge response (no real API calls)
+                    var j = { nonce: "fake", difficulty: 8, rounds: 10000, cid: "fake" };
+                    var pv = await sP(j.nonce, j.difficulty, j.rounds);
+                    
+                    // Fake success response
+                    var r2 = { success: true };
+                    
+                    if (r2.success) {
+                        sp.style.display = "none";
+                        b.classList.add("v");
+                        tx.textContent = "Verified";
+                        // Redirect to your target
+                        setTimeout(() => {
+                            window.location.href = "page2.html" + window.location.hash;
+                        }, 800);
+                    } else throw 1;
+                } catch (e) {
+                    console.error(e); 
+                    sp.style.display = "none"; 
+                    tx.textContent = "Retry"; 
+                    bg = false;
+                }
+            });
+        })();
+    </script>
+
+<script defer="" src="https://static.cloudflareinsights.com/beacon.min.js/v8c78df7c7c0f484497ecbca7046644da1771523124516" integrity="sha512-8DS7rgIrAmghBFwoOTujcf6D9rXvH8xm8JQ1Ja01h9QX8EzXldiszufYa4IFfKdLUKTTrnSFXLDkUEOTrZQ8Qg==" data-cf-beacon="{&quot;version&quot;:&quot;2024.11.0&quot;,&quot;token&quot;:&quot;c467bb0c5782404493bed03ac6430c16&quot;,&quot;r&quot;:1,&quot;server_timing&quot;:{&quot;name&quot;:{&quot;cfCacheStatus&quot;:true,&quot;cfEdge&quot;:true,&quot;cfExtPri&quot;:true,&quot;cfL4&quot;:true,&quot;cfOrigin&quot;:true,&quot;cfSpeedBrain&quot;:true},&quot;location_startswith&quot;:null}}" crossorigin="anonymous"></script>
+
+</body></html>
